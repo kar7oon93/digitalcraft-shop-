@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigitalCraft Studio - Premium Digital Assets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#ec4899',
+                        accent: '#8b5cf6',
+                        dark: '#0f172a',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .gradient-text { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3); }
+        .grid-pattern { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0); background-size: 40px 40px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1e293b; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-dark text-white overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('home')">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
+                        <i class="fas fa-cube text-white text-xl"></i>
+                    </div>
+                    <span class="font-display font-bold text-2xl tracking-tight">DigitalCraft</span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <button onclick="showSection('products')" class="hover:text-primary transition-colors">Products</button>
+                    <button onclick="showSection('custom')" class="hover:text-primary transition-colors">Custom Order</button>
+                    <button onclick="showSection('portfolio')" class="hover:text-primary transition-colors">Portfolio</button>
+                    <button onclick="showSection('contact')" class="hover:text-primary transition-colors">Contact</button>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleCart()" class="relative p-2 hover:bg-white/10 rounded-full transition-colors">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+                    </button>
+                    <button onclick="showSection('custom')" class="bg-gradient-to-r from-primary to-secondary px-6 py-2 rounded-full font-medium hover:shadow-lg hover:shadow-primary/50 transition-all transform hover:scale-105">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-96 bg-slate-900 border-l border-white/10 transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto custom-scrollbar">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-display font-bold">Your Cart</h2>
+                <button onclick="toggleCart()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div id="cart-items" class="space-y-4 mb-6">
+                <p class="text-gray-400 text-center py-8">Your cart is empty</p>
+            </div>
+            <div id="cart-footer" class="hidden border-t border-white/10 pt-4">
+                <div class="flex justify-between mb-4 text-lg font-bold">
+                    <span>Total:</span>
+                    <span id="cart-total">$0</span>
+                </div>
+                <button onclick="checkout()" class="w-full bg-gradient-to-r from-primary to-secondary py-3 rounded-xl font-bold hover:shadow-lg transition-all">
+                    Checkout Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="section min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
+        <div class="absolute inset-0 grid-pattern opacity-30"></div>
+        <div class="absolute top-20 left-10 w-72 h-72 bg-primary/30 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-secondary/30 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 2s;"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="inline-block mb-4 px-4 py-1 rounded-full glass text-sm font-medium text-primary animate-slide-up">
+                🚀 Premium Digital Solutions
+            </div>
+            <h1 class="font-display text-5xl md:text-7xl font-bold mb-6 leading-tight animate-slide-up" style="animation-delay: 0.1s;">
+                Craft Your Digital<br>
+                <span class="gradient-text">Presence Today</span>
+            </h1>
+            <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto animate-slide-up" style="animation-delay: 0.2s;">
+                Custom images, Telegram bots, videos, and websites tailored to your vision. Professional quality, delivered fast.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up" style="animation-delay: 0.3s;">
+                <button onclick="showSection('products')" class="bg-white text-dark px-8 py-4 rounded-full font-bold hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center justify-center gap-2">
+                    Browse Products <i class="fas fa-arrow-right"></i>
+                </button>
+                <button onclick="showSection('custom')" class="glass px-8 py-4 rounded-full font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+                    Custom Request <i class="fas fa-magic"></i>
+                </button>
+            </div>
+            
+            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto animate-slide-up" style="animation-delay: 0.4s;">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-primary mb-1">500+</div>
+                    <div class="text-sm text-gray-400">Projects Done</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-secondary mb-1">98%</div>
+                    <div class="text-sm text-gray-400">Satisfaction</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-accent mb-1">24h</div>
+                    <div class="text-sm text-gray-400">Delivery</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-primary mb-1">50+</div>
+                    <div class="text-sm text-gray-400">Countries</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="section hidden py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">Our Services</h2>
+            <p class="text-gray-400 max-w-2xl mx-auto">Choose from our range of premium digital products or request a custom solution</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Images -->
+            <div class="glass rounded-2xl p-6 card-hover group cursor-pointer" onclick="showProductDetail('images')">
+                <div class="h-48 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl mb-4 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <i class="fas fa-image text-6xl text-white/80"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Custom Images</h3>
+                <p class="text-gray-400 text-sm mb-4">AI-enhanced graphics, logos, banners, and social media assets</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-primary font-bold">From $29</span>
+                    <span class="text-sm text-gray-500"><i class="fas fa-clock mr-1"></i>12h delivery</span>
+                </div>
+            </div>
+
+            <!-- Telegram Bots -->
+            <div class="glass rounded-2xl p-6 card-hover group cursor-pointer" onclick="showProductDetail('bots')">
+                <div class="h-48 bg-gradient-to-br from-sky-400 to-blue-600 rounded-xl mb-4 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <i class="fab fa-telegram text-6xl text-white/80"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Telegram Bots</h3>
+                <p class="text-gray-400 text-sm mb-4">Custom automation, games, utilities, and business bots</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-primary font-bold">From $99</span>
+                    <span class="text-sm text-gray-500"><i class="fas fa-clock mr-1"></i>48h delivery</span>
+                </div>
+            </div>
+
+            <!-- Videos -->
+            <div class="glass rounded-2xl p-6 card-hover group cursor-pointer" onclick="showProductDetail('videos')">
+                <div class="h-48 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl mb-4 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <i class="fas fa-video text-6xl text-white/80"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Video Editing</h3>
+                <p class="text-gray-400 text-sm mb-4">Motion graphics, intros, promotional videos, and reels</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-primary font-bold">From $49</span>
+                    <span class="text-sm text-gray-500"><i class="fas fa-clock mr-1"></i>24h delivery</span>
+                </div>
+            </div>
+
+            <!-- Websites -->
+            <div class="glass rounded-2xl p-6 card-hover group cursor-pointer" onclick="showProductDetail('websites')">
+                <div class="h-48 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl mb-4 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <i class="fas fa-globe text-6xl text-white/80"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Websites</h3>
+                <p class="text-gray-400 text-sm mb-4">Landing pages, portfolios, e-commerce, and web apps</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-primary font-bold">From $199</span>
+                    <span class="text-sm text-gray-500"><i class="fas fa-clock mr-1"></i>3-5 days</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing Tiers -->
+        <div class="mt-20">
+            <h3 class="text-3xl font-display font-bold text-center mb-12">Package Deals</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass rounded-2xl p-8 border border-white/10 hover:border-primary/50 transition-colors">
+                    <h4 class="text-xl font-bold mb-2">Starter</h4>
+                    <div class="text-4xl font-bold text-primary mb-4">$149</div>
+                    <ul class="space-y-3 mb-8 text-gray-300">
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i> 5 Custom Images</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i> Basic Logo Design</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i> 1 Revision</li>
+                    </ul>
+                    <button onclick="addToCart('starter', 149)" class="w-full py-3 rounded-xl border border-primary text-primary hover:bg-primary hover:text-white transition-all">Select</button>
+                </div>
+
+                <div class="glass rounded-2xl p-8 border-2 border-primary relative transform scale-105">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary px-4 py-1 rounded-full text-sm font-bold">Popular</div>
+                    <h4 class="text-xl font-bold mb-2">Business</h4>
+                    <div class="text-4xl font-bold text-primary mb-4">$499</div>
+                    <ul class="space-y-3 mb-8 text-gray-300">
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i> Everything in Starter</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i> Simple Telegram Bot</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i> 30-sec Promo Video</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i> 3 Revisions</li>
+                    </ul>
+                    <button onclick="addToCart('business', 499)" class="w-full py-3 rounded-xl bg-primary text-white hover:bg-primary/80 transition-all">Select</button>
+                </div>
+
+                <div class="glass rounded-2xl p-8 border border-white/10 hover:border-secondary/50 transition-colors">
+                    <h4 class="text-xl font-bold mb-2">Enterprise</h4>
+                    <div class="text-4xl font-bold text-secondary mb-4">$999</div>
+                    <ul class="space-y-3 mb-8 text-gray-300">
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i> Everything in Business</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i> Full Website (5 pages)</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i> Advanced Bot Features</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i> Unlimited Revisions</li>
+                    </ul>
+                    <button onclick="addToCart('enterprise', 999)" class="w-full py-3 rounded-xl border border-secondary text-secondary hover:bg-secondary hover:text-white transition-all">Select</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Custom Order Section -->
+    <section id="custom" class="section hidden py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <div class="glass rounded-3xl p-8 md:p-12">
+            <h2 class="font-display text-3xl md:text-4xl font-bold mb-6 text-center">Request Custom Project</h2>
+            <p class="text-center text-gray-400 mb-8">Tell us about your vision and we'll bring it to life</p>
+            
+            <form id="custom-form" onsubmit="submitCustomOrder(event)" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Your Name</label>
+                        <input type="text" required class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-colors" placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email</label>
+                        <input type="email" required class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-colors" placeholder="john@example.com">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-2">Project Type</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="project-type" value="images" class="peer hidden" checked>
+                            <div class="glass p-4 rounded-xl text-center peer-checked:bg-primary peer-checked:border-primary transition-all hover:bg-white/5">
+                                <i class="fas fa-image text-2xl mb-2"></i>
+                                <div class="text-sm">Images</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="project-type" value="bots" class="peer hidden">
+                            <div class="glass p-4 rounded-xl text-center peer-checked:bg-primary peer-checked:border-primary transition-all hover:bg-white/5">
+                                <i class="fab fa-telegram text-2xl mb-2"></i>
+                                <div class="text-sm">Bot</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="project-type" value="videos" class="peer hidden">
+                            <div class="glass p-4 rounded-xl text-center peer-checked:bg-primary peer-checked:border-primary transition-all hover:bg-white/5">
+                                <i class="fas fa-video text-2xl mb-2"></i>
+                                <div class="text-sm">Video</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="project-type" value="websites" class="peer hidden">
+                            <div class="glass p-4 rounded-xl text-center peer-checked:bg-primary peer-checked:border-primary transition-all hover:bg-white/5">
+                                <i class="fas fa-globe text-2xl mb-2"></i>
+                                <div class="text-sm">Website</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-2">Budget Range</label>
+                    <select class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-colors">
+                        <option>$50 - $100</option>
+                        <option>$100 - $500</option>
+                        <option>$500 - $1000</option>
+                        <option>$1000+</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-2">Project Details</label>
+                    <textarea rows="4" required class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-colors" placeholder="Describe your project requirements..."></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-primary to-secondary py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-primary/50 transition-all transform hover:scale-[1.02]">
+                    Submit Request <i class="fas fa-paper-plane ml-2"></i>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="section hidden py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <h2 class="font-display text-4xl md:text-5xl font-bold text-center mb-12">Recent Work</h2>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="group relative overflow-hidden rounded-2xl aspect-video cursor-pointer" onclick="showPortfolioItem('E-Commerce Bot')">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+                    <i class="fab fa-telegram text-6xl text-white/20"></i>
+                </div>
+                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div class="text-center">
+                        <h4 class="text-xl font-bold">E-Commerce Bot</h4>
+                        <p class="text-sm text-gray-300">Telegram Automation</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-2xl aspect-video cursor-pointer" onclick="showPortfolioItem('Brand Identity')">
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
+                    <i class="fas fa-palette text-6xl text-white/20"></i>
+                </div>
+                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div class="text-center">
+                        <h4 class="text-xl font-bold">Brand Identity</h4>
+                        <p class="text-sm text-gray-300">Visual Design</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-2xl aspect-video cursor-pointer" onclick="showPortfolioItem('SaaS Landing Page')">
+                <div class="absolute inset-0 bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+                    <i class="fas fa-rocket text-6xl text-white/20"></i>
+                </div>
+                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div class="text-center">
+                        <h4 class="text-xl font-bold">SaaS Landing Page</h4>
+                        <p class="text-sm text-gray-300">Web Development</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-2xl aspect-video cursor-pointer" onclick="showPortfolioItem('Product Promo')">
+                <div class="absolute inset-0 bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
+                    <i class="fas fa-film text-6xl text-white/20"></i>
+                </div>
+                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div class="text-center">
+                        <h4 class="text-xl font-bold">Product Promo</h4>
+                        <p class="text-sm text-gray-300">Video Production</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-2xl aspect-video cursor-pointer" onclick="showPortfolioItem('Crypto Trading Bot')">
+                <div class="absolute inset-0 bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center">
+                    <i class="fas fa-robot text-6xl text-white/20"></i>
+                </div>
+                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div class="text-center">
+                        <h4 class="text-xl font-bold">Crypto Trading Bot</h4>
+                        <p class="text-sm text-gray-300">Advanced Automation</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-2xl aspect-video cursor-pointer" onclick="showPortfolioItem('Mobile App UI')">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                    <i class="fas fa-mobile-alt text-6xl text-white/20"></i>
+                </div>
+                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div class="text-center">
+                        <h4 class="text-xl font-bold">Mobile App UI</h4>
+                        <p class="text-sm text-gray-300">Interface Design</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section hidden py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <div class="glass rounded-3xl p-8 md:p-12 text-center">
+            <h2 class="font-display text-3xl md:text-4xl font-bold mb-6">Get In Touch</h2>
+            <p class="text-gray-400 mb-8">Have questions? We're here to help you 24/7</p>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <div class="p-6 rounded-2xl bg-white/5">
+                    <i class="fab fa-telegram text-4xl text-sky-400 mb-4"></i>
+                    <h4 class="font-bold mb-2">Telegram</h4>
+                    <p class="text-sm text-gray-400">@DigitalCraftSupport</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-white/5">
+                    <i class="fas fa-envelope text-4xl text-primary mb-4"></i>
+                    <h4 class="font-bold mb-2">Email</h4>
+                    <p class="text-sm text-gray-400">hello@digitalcraft.studio</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-white/5">
+                    <i class="fas fa-clock text-4xl text-secondary mb-4"></i>
+                    <h4 class="font-bold mb-2">Response Time</h4>
+                    <p class="text-sm text-gray-400">Usually within 1 hour</p>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <a href="#" class="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-primary transition-colors">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-primary transition-colors">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-primary transition-colors">
+                    <i class="fab fa-discord"></i>
+                </a>
+                <a href="#" class="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-primary transition-colors">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 py-12 px-4 sm:px-6 lg:px-8 mt-20">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                    <i class="fas fa-cube text-white text-sm"></i>
+                </div>
+                <span class="font-display font-bold text-xl">DigitalCraft</span>
+            </div>
+            <div class="text-gray-400 text-sm">
+                © 2024 DigitalCraft Studio. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-white text-dark px-6 py-4 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
+        <i class="fas fa-check-circle text-green-500 text-xl"></i>
+        <div>
+            <div class="font-bold" id="toast-title">Success</div>
+            <div class="text-sm text-gray-600" id="toast-message">Item added to cart</div>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            const target = document.getElementById(sectionId);
+            target.classList.remove('hidden');
+            target.classList.add('animate-slide-up');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Close cart if open
+            document.getElementById('cart-sidebar').classList.add('translate-x-full');
+        }
+
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            sidebar.classList.toggle('translate-x-full');
+        }
+
+        function addToCart(item, price) {
+            const existingItem = cart.find(i => i.name === item);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ name: item, price: price, quantity: 1 });
+            }
+            updateCart();
+            showToast('Added to Cart', `${item} package added successfully`);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartFooter = document.getElementById('cart-footer');
+            const cartTotal = document.getElementById('cart-total');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p class="text-gray-400 text-center py-8">Your cart is empty</p>';
+                cartCount.classList.add('hidden');
+                cartFooter.classList.add('hidden');
+            } else {
+                let total = 0;
+                let count = 0;
+                cartItems.innerHTML = cart.map((item, index) => {
+                    total += item.price * item.quantity;
+                    count += item.quantity;
+                    return `
+                        <div class="flex justify-between items-center bg-white/5 p-4 rounded-xl">
+                            <div>
+                                <div class="font-bold capitalize">${item.name} Package</div>
+                                <div class="text-sm text-gray-400">$${item.price} x ${item.quantity}</div>
+                            </div>
+                            <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-300">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+                
+                cartCount.textContent = count;
+                cartCount.classList.remove('hidden');
+                cartTotal.textContent = `$${total}`;
+                cartFooter.classList.remove('hidden');
+            }
+        }
+
+        function checkout() {
+            if (cart.length === 0) return;
+            
+            // Simulate checkout process
+            showToast('Processing...', 'Redirecting to payment...');
+            setTimeout(() => {
+                cart = [];
+                updateCart();
+                toggleCart();
+                showToast('Order Placed!', 'Check your email for details');
+            }, 1500);
+        }
+
+        function submitCustomOrder(e) {
+            e.preventDefault();
+            showToast('Request Sent!', 'We\'ll contact you within 1 hour');
+            document.getElementById('custom-form').reset();
+        }
+
+        function showToast(title, message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-message').textContent = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function showProductDetail(type) {
+            const details = {
+                images: 'Custom AI-enhanced images, logos, banners, and social media graphics tailored to your brand identity.',
+                bots: 'Fully functional Telegram bots with custom features, automation, payment integration, and admin panels.',
+                videos: 'Professional video editing, motion graphics, intros, and promotional content for all platforms.',
+                websites: 'Responsive, modern websites built with latest technologies. Includes SEO optimization and mobile support.'
+            };
+            showToast('Product Info', details[type]);
+        }
+
+        function showPortfolioItem(title) {
+            showToast('Portfolio Item', `${title} - Click to view details (Demo mode)`);
+        }
+
+        // Initialize
+        showSection('home');
+    </script>
+</body>
+</html>
+
